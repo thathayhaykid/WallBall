@@ -1,43 +1,47 @@
+/*
+ * This ESP32 code is created by esp32io.com
+ *
+ * This ESP32 code is released in the public domain
+ *
+ * For more detail (instruction and wiring diagram), visit https://esp32io.com/tutorials/esp32-neopixel-led-strip
+ */
+
 #include <Adafruit_NeoPixel.h>
 
-#define PIN_WS2812B 16;
-#define NUM_PIXELS  30;
+#define PIN_NEO_PIXEL 9  // The ESP32 pin GPIO16 connected to NeoPixel
+#define NUM_PIXELS 30     // The number of LEDs (pixels) on NeoPixel LED strip
 
-Adafruit_NeoPixel WS2812B(NUM_PIXELS, PIN_WS2812B, NEO_GRB + NEO_KHZ800);
-
-WS2812B.begin();
-WS2812B.setPixelColor(pixel, WS2812B.color(255, 0, 0));
-WS2812B.setBrightness(100);
+Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  // put your setup code here, to run once:
-    WS2812B.begin();
+  NeoPixel.begin();  // initialize NeoPixel strip object (REQUIRED)
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  WS2812B.clear();
+  NeoPixel.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
 
-  for (int pixel=0; pixel<NUM_PIXELS;pixel++){
-    WS2812B.setPixelColor(pixel, WS2812B.Color(0, 255, 0));
-    WS2812B.show();
+  // turn pixels to green one-by-one with delay between each pixel
+  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {           // for each pixel
+    NeoPixel.setPixelColor(pixel, NeoPixel.Color(0, 255, 0));  // it only takes effect if pixels.show() is called
+    NeoPixel.show();                                           // update to the NeoPixel Led Strip
 
-    delay(500);
+    delay(500);  // 500ms pause between each pixel
   }
 
-  WS2812B.clear();
-  WS2812B.show();
-  delay(2000);
+  // turn off all pixels for two seconds
+  NeoPixel.clear();
+  NeoPixel.show();  // update to the NeoPixel Led Strip
+  delay(2000);      // 2 seconds off time
 
-
-  for(int pixel=0;pixel < NUM_PIXELS;pixel++){
-    WS2812B.setPIxelColor(pixel, WS2812B.Color(255, 0, 0));
+  // turn on all pixels to red at the same time for two seconds
+  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {           // for each pixel
+    NeoPixel.setPixelColor(pixel, NeoPixel.Color(255, 0, 0));  // it only takes effect if pixels.show() is called
   }
+  NeoPixel.show();  // update to the NeoPixel Led Strip
+  delay(1000);      // 1 second on time
 
-  WS2812B.show();
-  delay(1000);
-
-  WS2812B.clear()
-  WS2812B.show()
-  delay(1000);
+  // turn off all pixels for one seconds
+  NeoPixel.clear();
+  NeoPixel.show();  // update to the NeoPixel Led Strip
+  delay(1000);      // 1 second off time
 }
