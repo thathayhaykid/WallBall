@@ -11,7 +11,7 @@
 #define PIN_NEO_PIXEL 9  // The ESP32 pin GPIO16 connected to NeoPixel
 #define NUM_PIXELS 30     // The number of LEDs (pixels) on NeoPixel LED strip
 
-Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel NeoPixel<NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800>;
 
 void setup() {
   NeoPixel.begin();  // initialize NeoPixel strip object (REQUIRED)
