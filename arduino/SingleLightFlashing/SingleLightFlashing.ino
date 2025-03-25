@@ -26,8 +26,6 @@ void loop() {
 
   FastLED.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
 
-
-
   // turn pixels to green one-by-one with delay between each pixel
   for (int pixel = 0; pixel < NUM_LEDS; pixel++) {           // for each pixel
     FastLED.clear();
@@ -46,6 +44,7 @@ void loop() {
   for (int pixel = 0; pixel < NUM_LEDS; pixel++) {           // for each pixel
     leds[pixel] = CRGB(255, 0, 0);
   }
+  
   FastLED.show();  // update to the NeoPixel Led Strip
   delay(1000);      // 1 second on time
 
