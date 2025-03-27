@@ -30,6 +30,9 @@ const int MAX_AMPS = 500;
 unsigned long lastDebouncetime = 0;
 unsigned long debounceDelay = 50;
 
+int oneSecond = 1000;
+unsigned long time_now = 0;
+
 
 CRGB leds[NUM_LEDS];
 
@@ -65,13 +68,16 @@ void loop() {
             leds[pixel] = CRGB(255, 0, 0);
           }
 
-      FastLED.show();
-      delay(100);
-      FastLED.clear();
-      FastLED.show();
+      FastLED.show(); 
+      while(millis() < time_now + period) {
+          FastLED.clear();
+          FastLED.show();
 
-      Serial.print(sensorReading);
-      Serial.println(" Knock!");
+          Serial.print(sensorReading);
+          Serial.println(" Knock!");
+
+        }
+      
     }
 
   }
