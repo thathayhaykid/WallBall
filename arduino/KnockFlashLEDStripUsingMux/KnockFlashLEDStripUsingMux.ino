@@ -14,7 +14,6 @@ See "Research" page in google docs, to be transfered to MD in this repository at
 #include <FastLED.h>
 
 // Constants for single piezo sensor
-const int knockSensor = A0;
 const int threshold = 500;
 
 // Constants for RGB Light Strip
@@ -33,8 +32,18 @@ unsigned long debounceDelay = 10;
 int oneSecond = 1000;
 unsigned long time_now = 0;
 
-
 CRGB leds[NUM_LEDS];
+
+// Mux Control Pins
+const int s0 = D10;
+const int s1 = D11;
+const int s2 = D12;
+
+//Read Mux
+const int muxInput = A0;
+
+// Number of Piezos to read
+const int numPiezo = 6;
 
 // these variables will change:
 int sensorReading = 0;
@@ -47,21 +56,32 @@ void setup() {
   FastLED.show();
   
   Serial.begin(115200);       // use the serial port
-}
 
+  pinMode(s0, OUTPUT);
+  pinMode(s1, OUTPUT);
+  pinMode(s2, OUTPUT);
+
+  digitalWrite(s0, LOW);
+  digitalWrite(s1, LOW);
+  digitalWrite(s2, LOW);
+}
+ 
 void loop() {
   // read the sensor and store it in the variable sensorReading:
-  sensorReading = analogRead(knockSensor);
-  //Serial.println(sensorReading);
-  // if the sensor reading is greater than the threshold:
+  int sensorValues[numPiezo];
 
-  if (sensorReading >= threshold) {
-    // Check the last debounce time for noise or not
-    lastDebouncetime = millis();
+  for (int i = 0; i < numPiezo; i++){
+    
+    sensorReading = readMux(i);
+    sensorValues[i] = sensorReading;
+
+    
+    if(sensorReading > threshold){
+      Serial.print("Channel: "); Serial.print(i); Serial.print(" Sensor Reading: "); Serial.println(sensorReading);
+      delay(5);
+    }
   }
-
-  //
-
+/*
     if(sensorReading >=threshold) {
       for (int pixel = 0; pixel < NUM_LEDS; pixel++){
             leds[pixel] = CRGB(255, 0, 0);
@@ -72,14 +92,38 @@ void loop() {
           Serial.print(sensorReading);
           Serial.println(" Knock!");
     }
-
+*/
   
 
   FastLED.clear();
   FastLED.show();
 }
 
+float readMux(int channel){
+  int controlPin[] = {s0, s1, s2};
 
+  int muxChannel[8][3]={
+    {0,0,0}, //channel 0
+    {1,0,0}, //channel 1
+    {0,1,0}, //channel 2
+    {1,1,0}, //channel 3
+    {0,0,1}, //channel 4
+    {1,0,1}, //channel 5
+    {0,1,1}, //channel 6
+    {1,1,1}, //channel 7
+  };
+
+  //loop through the 3 sig
+  for(int i = 0; i < 3; i ++){
+    digitalWrite(controlPin[i], muxChannel[channel][i]);
+  }
+
+  //read the value at the Z pin
+  int val = analogRead(muxInput);
+
+  //return the value
+  return val;
+}
   
   
 

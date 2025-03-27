@@ -38,6 +38,18 @@ const int H_DATA_PIN00 = 9;
 CRGB HLeds[HSTRIPS][NUM_LEDS_HORIZONTAL];
 CRGB VLeds[VSTRIPS][NUM_LEDS_VERTICAL];
 
+//Defines the piezo sensor pin
+const int knockSensor = 1;
+const int threshold = 1000;
+
+//Big numbers due to millis()
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
+// Use these to save the time / identify periods
+int oneperiod = 200;
+unsigned long time_now = 0;
+
 void setup() {
   // Register each LED Segment with their associated data pins, enabling each segment to be seen as LEDs
   // Unfortunately, it would not let me do this in a for loop for some reason, so you have to address each strip
@@ -55,6 +67,11 @@ void setup() {
   FastLED.show();
 }
 
+
+
+
+
+
 void loop() {
   FastLED.clear();
   FastLED.show();
@@ -65,7 +82,43 @@ void loop() {
   lightUpBox(randomRow, randomColumn, 0, 255, 0);
   FastLED.show();
   delay(500);
+
+  sensorReading = analogRead(knockSensor);
+
+  // if the sensor reading is greater than the threshold:
+
+  if (sensorReading >= threshold) {
+    // Check the last debounce time for noise or not
+    lastDebounceTime = millis();
+  }
+
+  //
+  if ((millis() - lastDebounceTime) > debounceDelay){
+
+    if(sensorReading >=threshold) {
+      for (int pixel = 0; pixel < NUM_LEDS; pixel++){
+            leds[pixel] = CRGB(255, 0, 0);
+          }
+
+      FastLED.show(); 
+      while(millis() < time_now + period) {
+          FastLED.clear();
+          FastLED.show();
+
+          Serial.print(sensorReading);
+          Serial.println(" Knock!");
+
+        }
+      
+    }
+
+  }
 }
+
+
+
+
+
 
 //This function lights up a particular horizontal segment
 void HSegment(int strip, int SegmentNumber, int R, int G, int B) {
