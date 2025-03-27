@@ -50,7 +50,6 @@ void setup() {
 
   FastLED.setMaxPowerInVoltsAndMilliamps(VOLTS, MAX_AMPS);
 
-
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.clear();
   FastLED.show();
@@ -60,30 +59,12 @@ void loop() {
   FastLED.clear();
   FastLED.show();
   delay(200);
-  for (int strips = 0; strips < HSTRIPS; strips++){
-    for (int segments = 0; segments < H_SEGMENTS; segments++){
-      fillAll(255, 0, 0);
-      HSegment(strips, segments, 0, 255, 0);
-      FastLED.show();
-      delay(1000);
-      FastLED.clear();
-      FastLED.show();
-      delay(500);
-   }
-  }
-
-  for (int strips = 0; strips < VSTRIPS; strips++){
-    for (int segments = 0; segments < V_SEGMENTS; segments++){
-      fillAll(255, 0, 0);
-      VSegment(strips, segments, 0, 255, 0);
-      HSegment(0, 1, 0, 255, 0);
-      FastLED.show();
-      delay(1000);
-      FastLED.clear();
-      FastLED.show();
-      delay(500);
-   }
-  }
+  fillAll(255, 0,0);
+  int randomRow = random(1, rows+1);
+  int randomColumn = random(1, columns+1);
+  lightUpBox(randomRow, randomColumn, 0, 255, 0);
+  FastLED.show();
+  delay(500);
 }
 
 //This function lights up a particular horizontal segment
@@ -102,6 +83,8 @@ void VSegment(int strip, int SegmentNumber, int R, int G, int B) {
   }
 }
 
+
+// This function fills all LEDS with a selected color
 void fillAll(int R, int G, int B){
   for (int strips = 0; strips < HSTRIPS; strips++){
     for (int pixel = 0; pixel < NUM_LEDS_HORIZONTAL; pixel++){
@@ -113,6 +96,113 @@ void fillAll(int R, int G, int B){
     for (int pixel = 0; pixel < NUM_LEDS_VERTICAL; pixel++){
       VLeds[strips][pixel] = CRGB(R, G, B);
    }
+  }
+}
+
+void lightUpBox(int rowNum,int columnNum, int R, int G, int B){
+  // Lots of these if cases are to locate where in the grid we're selecting to light up, and lighting up the appropriate segments to their correct colors
+  // IF the box specified is in the upper right corner
+  if(rowNum == 1 && columnNum == 1){
+    int Hstrip = rowNum - 1;
+    int Vstrip = columnNum - 1;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(Hstrip, Hsegment, R, G, B);
+    VSegment(Vstrip, Vsegment, R, G, B);
+  }
+
+  //If the last box in the first row is selected
+  else if(rowNum == 1 && columnNum == columns){
+    int HStrip = rowNum - 1;
+    int VStrip = columnNum - 2;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip, Hsegment, R, G, B);
+    VSegment(VStrip, Vsegment, R, G, B);
+  }
+  //If the top row, center box is selected
+  else if (rowNum == 1 && columnNum > 1 && columnNum < columns){
+    int HStrip = rowNum - 1;
+    int VStrip1 = columnNum - 2;
+    int VStrip2 = columnNum - 1;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip, Hsegment, R, G, B);
+    VSegment(VStrip1, Vsegment, R, G, B);
+    VSegment(VStrip2, Vsegment, R, G, B);
+  }
+  //If center row, first column is selected
+  else if (rowNum > 1 && rowNum < rows && columnNum == 1){
+    int HStrip1 = rowNum - 2;
+    int HStrip2 = rowNum - 1;
+    int VStrip = columnNum - 1;
+    
+    int Hsegment = columnNum -1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip1, Hsegment, R, G, B);
+    HSegment(HStrip2, Hsegment, R, G, B);
+    VSegment(VStrip, Vsegment, R, G, B);
+  }
+  // if center, center row is selected
+  else if (rowNum > 1 && rowNum < rows && columnNum > 1 && columnNum < columns){
+    int HStrip1 = rowNum - 2;
+    int HStrip2 = rowNum - 1;
+    int VStrip1 = columnNum - 2;
+    int VStrip2 = columnNum - 1;
+
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip1, Hsegment, R, G, B);
+    HSegment(HStrip2, Hsegment, R, G, B);
+    VSegment(VStrip1, Vsegment, R, G, B);
+    VSegment(VStrip2, Vsegment, R, G, B);
+  }
+
+  // if Center row, last column is selected
+  else if (rowNum > 1 && rowNum < rows && columnNum == columns){
+    int HStrip1 = rowNum - 2;
+    int HStrip2 = rowNum - 1;
+    int VStrip = columnNum - 2;
+    
+    int Hsegment = columnNum -1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip1, Hsegment, R, G, B);
+    HSegment(HStrip2, Hsegment, R, G, B);
+    VSegment(VStrip, Vsegment, R, G, B);
+
+  }
+
+  // if First Column, Last Row  is selected
+  else if (rowNum == rows && columnNum == 1){
+    int Hstrip = rowNum - 2;
+    int Vstrip = columnNum - 1;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(Hstrip, Hsegment, R, G, B);
+    VSegment(Vstrip, Vsegment, R, G, B);
+  }
+
+  // if a center column, last row is selected
+  else if (rowNum == rows && columnNum > 1 && columnNum < columns){
+    int HStrip = rowNum - 2;
+    int VStrip1 = columnNum - 2;
+    int VStrip2 = columnNum - 1;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(HStrip, Hsegment, R, G, B);
+    VSegment(VStrip1, Vsegment, R, G, B);
+    VSegment(VStrip2, Vsegment, R, G, B);
+  }
+
+  // if the last column, last row is selected 
+  else if (rowNum == rows && columnNum == columns){
+    int Hstrip = rowNum - 2;
+    int Vstrip = columnNum - 2;
+    int Hsegment = columnNum - 1;
+    int Vsegment = rowNum - 1;
+    HSegment(Hstrip, Hsegment, R, G, B);
+    VSegment(Vstrip, Vsegment, R, G, B);
+
   }
 
 }
