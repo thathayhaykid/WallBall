@@ -69,32 +69,25 @@ void setup() {
 void loop() {
   // read the sensor and store it in the variable sensorReading:
   int sensorValues[numPiezo];
+  int maxValue = 0;
+  int maxValuePin;
 
   for (int i = 0; i < numPiezo; i++){
-    
     sensorReading = readMux(i);
     sensorValues[i] = sensorReading;
-
-    
-    if(sensorReading > threshold){
-      Serial.print("Channel: "); Serial.print(i); Serial.print(" Sensor Reading: "); Serial.println(sensorReading);
-      delay(5);
+    delay(50);
+  }
+  
+  for(int i=0; i < numPiezo; i++){
+    if (sensorValues[i] > maxValue && sensorValues[i] > threshold){
+      maxValue = sensorValues[i];
+      maxValuePin = i;
     }
   }
-/*
-    if(sensorReading >=threshold) {
-      for (int pixel = 0; pixel < NUM_LEDS; pixel++){
-            leds[pixel] = CRGB(255, 0, 0);
-          }
-
-          FastLED.show();
-          delay(300);
-          Serial.print(sensorReading);
-          Serial.println(" Knock!");
-    }
-*/
   
-
+  if(maxValue > threshold){
+      Serial.print("Max Value: "); Serial.print(maxValue); Serial.print(" Channel: "); Serial.println(maxValuePin);
+    }
   FastLED.clear();
   FastLED.show();
 }
